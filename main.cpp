@@ -35,6 +35,7 @@ struct Point
         str += " }";
         return str;
     }
+
 private:
     float x{0}, y{0};
 };
@@ -46,7 +47,37 @@ struct Wrapper
     { 
         std::cout << "Wrapper(" << typeid(val).name() << ")" << std::endl; 
     }
+
+    void print()
+    {
+        std::cout << "Wrapper::print(" << val << ")" << std::endl;
+    }
+
+    private:
+    Type val;
 };
+
+template<>
+void Wrapper<Point>::print()
+{
+    std::cout << "Wrapper::print(" << val.toString() << ")" << std::endl;
+}
+
+template<typename firstT>
+void variadicHelper(firstT lone)
+{
+    Wrapper wrap (std::forward<firstT>(lone) );
+    wrap.print();
+}
+
+template<typename firstT, typename ... Args>
+void variadicHelper(firstT lone, Args ... everythingElse)
+{
+    Wrapper wrap (std::forward<firstT>(lone) );
+    wrap.print();
+    variadicHelper( std::forward<Args> (everythingElse)... );
+}
+
 
 /*
  MAKE SURE YOU ARE NOT ON THE MASTER BRANCH
@@ -66,5 +97,3 @@ int main()
 {
     variadicHelper( 3, std::string("burgers"), 2.5, Point{3.f, 0.14f} );
 }
-
-
