@@ -35,9 +35,12 @@ struct Point
         str += " }";
         return str;
     }
+
 private:
     float x{0}, y{0};
 };
+
+void variadicHelper();
 
 template<typename Type>
 struct Wrapper
@@ -46,7 +49,44 @@ struct Wrapper
     { 
         std::cout << "Wrapper(" << typeid(val).name() << ")" << std::endl; 
     }
+
+    void print()
+    {
+        std::cout << "Wrapper::print(" << val << ")" << std::endl;
+    }
+
+    private:
+    Type val;
 };
+
+template<>
+void Wrapper<Point>::print()
+{
+    std::cout << "Wrapper::print(" << val.toString() << ")" << std::endl;
+}
+
+// template<typename FirstT>
+// void variadicHelper(FirstT lone)
+// {
+//     Wrapper wrap (std::forward<FirstT>(lone) );
+//     wrap.print();
+// }
+
+
+template<typename FirstT, typename ... Args>
+void variadicHelper(FirstT lone, Args ... everythingElse)
+{
+    Wrapper<FirstT> wrap (std::forward<FirstT>(lone) );
+ 
+    wrap.print();
+    variadicHelper( std::forward<Args> (everythingElse)... );  
+    
+}
+
+void variadicHelper() 
+{
+    std::cout << "all done!" << std::endl;
+}
 
 /*
  MAKE SURE YOU ARE NOT ON THE MASTER BRANCH
@@ -65,6 +105,8 @@ struct Wrapper
 int main()
 {
     variadicHelper( 3, std::string("burgers"), 2.5, Point{3.f, 0.14f} );
+
+    //instantiate a Wrapper instance here:
+    //Wrapper<int> wrapint (1);
+
 }
-
-
